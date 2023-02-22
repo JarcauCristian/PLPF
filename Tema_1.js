@@ -4,19 +4,18 @@ console.log(grade, letterGrade(grade));
 function letterGrade(grade)
 {
     grade = Math.round(grade);
-
-    switch (grade)
+    switch (true)
     {
-        case grade > 60 && grade <= 69:
+        case (grade >= 60 && grade <= 69):
             return 'D';
 
-        case grade > 69 && grade <= 79:
+        case (grade > 70 && grade <= 79):
             return 'C';
         
-        case grade > 79 && grade <= 89:
+        case (grade > 80 && grade <= 89):
             return 'B';
 
-        case grade > 89 && grade <= 100:
+        case (grade > 90 && grade <= 100):
             return 'A';
         
         default:
