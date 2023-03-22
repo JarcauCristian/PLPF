@@ -44,13 +44,21 @@ console.log(y());
 
 function makeFibonacci(x) {
   return function () {
-    if (x === 1) {
-      console.log(0);
-    }
-    if (x === 2) {
-      console.log([0, 1]);
+    if (x < 0)
+    {
+      console.log("x can't be negative!");
+      return;
     }
     let result = [];
+    if (x === 1) {
+      result.push(0);
+      return result;
+    }
+    if (x === 2) {
+      result.push(0);
+      result.push(1);
+      return result;
+    }
     if (x >= 3) {
       let a = 0;
       let b = 1;
