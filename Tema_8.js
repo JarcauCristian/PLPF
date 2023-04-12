@@ -39,19 +39,50 @@ var influences = [
   ["Scheme", "JavaScript"],
   ["Scheme", "Lua"],
   ["Self", "Lua"],
-  ["Self", "JavaScript"],
+  ["Self", "JavaScript"]
 ];
 
 function nexts(graph, node) {
   if (_.isEmpty(graph)) return [];
-  var pair = _.first(graph);
-  var from = _.first(pair);
-  var to = pair[1];
-  var more = _.rest(graph);
-  if (_.isEqual(node, from)) return construct(to, nexts(more, node));
-  else return construct(to, nexts(more, from));
+  path = _.first(graph);
+  from = _.first(path);
+  to = _.last(path);
+  more = _.rest(graph);
+  if (node === from) {
+    return construct(to, nexts(more, node));
+  }
+  else return nexts(more, node);
 }
-console.log(nexts(influences, "Lisp"));
+
+
+function pargurgereInLatime(graph, start, end)
+{
+   nodes = [start];
+   id = 0
+   while(!_.contains(nodes, end))
+   {
+    for (var j = id; j < nodes.length; j++)
+    {
+     var subNodes = nexts(graph, nodes[j])
+     for (var i of _.toArray(subNodes))
+     {
+        if(i === end)
+       {
+        nodes.push(i);
+        break;
+       }
+       if (!_.contains(nodes, i))
+       {
+        nodes.push(i);
+       }
+      }
+      id += subNodes.length === 0 ? 1 : subNodes.length;
+    }
+  }
+   console.log(nodes);
+}
+
+pargurgereInLatime(influences, 'Lisp', 'JavaScript');
 
 function existy(x) {
   return x != null;
