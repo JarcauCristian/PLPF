@@ -23,7 +23,7 @@ console.log(
 );
 
 const add = (a, b) => a + b;
-const rangeArr = (n) => _.range(n);
+const rangeArr = (n) => _.range(1, n);
 const compose =
   (...functions) =>
   (args) =>
