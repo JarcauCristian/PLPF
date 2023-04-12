@@ -32,7 +32,8 @@ function myMean(array, mean, len) {
         return mean / len;
     }
     else
-        mean += mySum(_.rest(array), mean, len);
+        mean += _.first(array);
+        return myMean(_.rest(array), mean, len);
 }
 
 console.log('Media elementelor din sir este: ' + myMean([1, 2, 3, 4], 0, [1, 2, 3, 4].length));
