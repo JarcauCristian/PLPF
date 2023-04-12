@@ -39,7 +39,7 @@ var influences = [
   ["Scheme", "JavaScript"],
   ["Scheme", "Lua"],
   ["Self", "Lua"],
-  ["Self", "JavaScript"]
+  ["Self", "JavaScript"],
 ];
 
 function nexts(graph, node) {
@@ -50,39 +50,90 @@ function nexts(graph, node) {
   more = _.rest(graph);
   if (node === from) {
     return construct(to, nexts(more, node));
-  }
-  else return nexts(more, node);
+  } else return nexts(more, node);
 }
 
+const graph = {};
+for (var i of influences) {
+  var from = _.first(i);
+  var to = _.last(i);
+  graph[from] = _.contains(graph, graph[from]) ? graph[from] : [];
+  graph[to] = _.contains(graph, graph[to]) ? graph[to] : [];
+  graph[from].push(to);
+  graph[to].push(from);
+}
 
-function pargurgereInLatime(graph, start, end)
+function pargurgereAdancime(graph, node, root, visited) 
 {
-   nodes = [start];
-   id = 0
-   while(!_.contains(nodes, end))
-   {
-    for (var j = id; j < nodes.length; j++)
-    {
-     var subNodes = nexts(graph, nodes[j])
-     for (var i of _.toArray(subNodes))
-     {
-        if(i === end)
-       {
-        nodes.push(i);
-        break;
-       }
-       if (!_.contains(nodes, i))
-       {
-        nodes.push(i);
-       }
+  visited.push(node);
+
+  for (var j of graph[node])
+  {
+      if (j === root)
+      {
+        return j;
       }
-      id += subNodes.length === 0 ? 1 : subNodes.length;
-    }
+      if (!_.contains(visited, j))
+      {
+        var result = pargurgereAdancime(graph, j, root, visited);
+        if (result != null)
+        {
+          return result;
+        }
+      }
   }
-   console.log(nodes);
+}
+console.log(pargurgereAdancime(graph, 'JavaScript', 'Lisp', []));
+
+function pargurgereLatime(graph, start, end) {
+  var discovered = [];
+  var backup = [start];
+  var visited = [start];
+  while (!_.isEmpty(backup)) {
+    discovered.push(backup[0]);
+    backup = backup.slice(1, backup.length);
+    var question = _.first(discovered) === start ?  [] : discovered
+    var nodes = [start, ...question.values()];
+    while (_.last(nodes) !== end) {
+      var subNodes = nexts(graph, discovered.pop());
+      if (!_.contains(visited, subNodes[0]) && subNodes[0] != undefined) 
+      {
+        discovered.push(subNodes[0]);
+        visited.push(subNodes[0]);
+      }
+      for (var j = 1; j < _.toArray(subNodes).length; j++) {
+        var tr = nexts(graph, subNodes[j]);
+        if (!_.contains(visited, subNodes[j]) && !_.isEmpty(tr)) {
+          backup.push(subNodes[j]);
+        }
+      }
+      var subTry = nexts(graph, _.last(discovered));
+      if (_.isEmpty(subTry))
+      {
+        discovered.pop();
+        for (var j = 0; j < _.toArray(subNodes).length; j++)
+        {
+          if (_.isEqual(end, subNodes[j]))
+          {
+            nodes.push(subNodes[j]);
+          }
+        }
+      }
+      else
+      {
+        for (var i of _.toArray(subNodes)) {
+          if (!_.contains(nodes, i)) {
+            nodes.push(i);
+            break;
+          }
+        }
+      }
+    }
+    console.log(nodes);
+  }
 }
 
-pargurgereInLatime(influences, 'Lisp', 'JavaScript');
+pargurgereLatime(influences, "Lisp", "JavaScript", []);
 
 function existy(x) {
   return x != null;
@@ -128,30 +179,31 @@ function andify() {
   };
 }
 
-var capitalCase = andify(_.isString, (x) => x.charAt(0) == x.charAt(0).toUpperCase());
+var capitalCase = andify(
+  _.isString,
+  (x) => x.charAt(0) == x.charAt(0).toUpperCase()
+);
 console.log(capitalCase("John", "Up", "Down", "Left"));
 
 console.log(capitalCase("John", "Up", "Down", "left"));
 
 var keyString = andify(_.isString);
 
-const dc = {"John": 'up', 'down': 'Up'};
-console.log(keyString(...Object.keys(dc)))
+const dc = { John: "up", down: "Up" };
+console.log(keyString(...Object.keys(dc)));
 
 tic_tac_toe = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
 
-choices = ['X', 0]
+choices = ["X", 0];
 
 function generate_random_game(array, ind) {
-  if (ind == array.length)
-  {
+  if (ind == array.length) {
     return 0;
-  }
-  else {
+  } else {
     array[ind] = choices[Math.round(Math.random())];
     return generate_random_game(array, ind + 1);
   }
 }
 
-generate_random_game(tic_tac_toe, 0)
-console.log(tic_tac_toe)
+generate_random_game(tic_tac_toe, 0);
+console.log(tic_tac_toe);
