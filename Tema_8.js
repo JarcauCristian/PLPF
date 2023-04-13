@@ -39,7 +39,7 @@ var influences = [
   ["Scheme", "JavaScript"],
   ["Scheme", "Lua"],
   ["Self", "Lua"],
-  ["Self", "JavaScript"],
+  ["Self", "JavaScript"]
 ];
 
 function nexts(graph, node) {
@@ -53,87 +53,71 @@ function nexts(graph, node) {
   } else return nexts(more, node);
 }
 
-const graph = {};
-for (var i of influences) {
-  var from = _.first(i);
-  var to = _.last(i);
-  graph[from] = _.contains(graph, graph[from]) ? graph[from] : [];
-  graph[to] = _.contains(graph, graph[to]) ? graph[to] : [];
-  graph[from].push(to);
-  graph[to].push(from);
-}
+console.log("\nParcurgere in latime")
 
-function pargurgereAdancime(graph, node, root, visited) 
-{
-  visited.push(node);
-
-  for (var j of graph[node])
+function parcurgereLatime(graph, start, end, visited, res) {
+  var result = nexts(graph, start);
+  if (_.contains(result, end))
   {
-      if (j === root)
-      {
-        return j;
-      }
-      if (!_.contains(visited, j))
-      {
-        var result = pargurgereAdancime(graph, j, root, visited);
-        if (result != null)
-        {
-          return result;
-        }
-      }
+     res.push(end);
+     console.log(res);
+     res = [visited[0]];
+     return parcurgereLatime(graph, visited[0], end, visited, res);
   }
-}
-console.log(pargurgereAdancime(graph, 'JavaScript', 'Lisp', []));
-
-function pargurgereLatime(graph, start, end) {
-  var discovered = [];
-  var backup = [start];
-  var visited = [start];
-  while (!_.isEmpty(backup)) {
-    discovered.push(backup[0]);
-    backup = backup.slice(1, backup.length);
-    var question = _.first(discovered) === start ?  [] : discovered
-    var nodes = [start, ...question.values()];
-    while (_.last(nodes) !== end) {
-      var subNodes = nexts(graph, discovered.pop());
-      if (!_.contains(visited, subNodes[0]) && subNodes[0] != undefined) 
+  if (result !== [])
+  {
+    for (var i of result)
+    {
+      if (!_.contains(visited, i))
       {
-        discovered.push(subNodes[0]);
-        visited.push(subNodes[0]);
-      }
-      for (var j = 1; j < _.toArray(subNodes).length; j++) {
-        var tr = nexts(graph, subNodes[j]);
-        if (!_.contains(visited, subNodes[j]) && !_.isEmpty(tr)) {
-          backup.push(subNodes[j]);
-        }
-      }
-      var subTry = nexts(graph, _.last(discovered));
-      if (_.isEmpty(subTry))
-      {
-        discovered.pop();
-        for (var j = 0; j < _.toArray(subNodes).length; j++)
-        {
-          if (_.isEqual(end, subNodes[j]))
-          {
-            nodes.push(subNodes[j]);
-          }
-        }
-      }
-      else
-      {
-        for (var i of _.toArray(subNodes)) {
-          if (!_.contains(nodes, i)) {
-            nodes.push(i);
-            break;
-          }
-        }
+        visited.push(i);
+        res.push(i);
+        return parcurgereLatime(graph, i, end, visited, res);
       }
     }
-    console.log(nodes);
   }
 }
 
-pargurgereLatime(influences, "Lisp", "JavaScript", []);
+parcurgereLatime(influences, "Lisp", "JavaScript", ['Lisp'], ['Lisp']);
+
+console.log("\nParcurgere in adancime")
+function backs(graph, node) {
+  if (_.isEmpty(graph)) return [];
+  path = _.first(graph);
+  from = _.first(path);
+  to = _.last(path);
+  more = _.rest(graph);
+  if (node == to) {
+    return construct(from, backs(more, node));
+  } else return backs(more, node);
+}
+
+function parcurgereAdancime(graph, start, end, visited, res)
+{
+  var result = backs(graph, start);
+  if (_.contains(result, end))
+  {
+     res.push(end);
+     console.log(res);
+     res = [visited[0]];
+     return parcurgereAdancime(graph, visited[0], end, visited, res);
+  }
+  if (result !== [])
+  {
+    for (var i of result)
+    {
+      if (!_.contains(visited, i))
+      {
+        visited.push(i);
+        res.push(i);
+        return parcurgereAdancime(graph, i, end, visited, res);
+      }
+    }
+  }
+}
+
+parcurgereAdancime(influences, 'JavaScript', 'Lisp', ['JavaScript'], ['JavaScript']);
+
 
 function existy(x) {
   return x != null;
@@ -162,10 +146,10 @@ function orify() {
     return everything(preds, true);
   };
 }
-
+console.log();
 var evenNums = orify(_.isNumber, isEven);
-console.log(evenNums(2, 4, 6, 8));
-console.log(evenNums(1, 4, 6, 8));
+console.log("orify: " + evenNums(2, 4, 6, 8));
+console.log("orify: " + evenNums(1, 4, 6, 8));
 
 function andify() {
   var preds = _.toArray(arguments);
@@ -183,14 +167,14 @@ var capitalCase = andify(
   _.isString,
   (x) => x.charAt(0) == x.charAt(0).toUpperCase()
 );
-console.log(capitalCase("John", "Up", "Down", "Left"));
+console.log("Capital case: " + capitalCase("John", "Up", "Down", "Left"));
 
-console.log(capitalCase("John", "Up", "Down", "left"));
+console.log("Capital case: " + capitalCase("John", "Up", "Down", "left"));
 
 var keyString = andify(_.isString);
 
 const dc = { John: "up", down: "Up" };
-console.log(keyString(...Object.keys(dc)));
+console.log("Daca un dictionar are toate cheile string-uri: " + keyString(...Object.keys(dc)));
 
 tic_tac_toe = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
 
@@ -206,4 +190,4 @@ function generate_random_game(array, ind) {
 }
 
 generate_random_game(tic_tac_toe, 0);
-console.log(tic_tac_toe);
+console.log("\n" + tic_tac_toe);
