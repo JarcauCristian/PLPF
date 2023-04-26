@@ -9,7 +9,8 @@ function func(x, y)
     {
         return "Can not do division to zero!"
     }
-    return (x_pow_4 * sq_root) / dif_pow_2;
+    const result = (x_pow_4 * sq_root) / dif_pow_2;
+    return result;
 }
 
 console.log(func(1, 2));
